@@ -20,3 +20,13 @@ model User {
   nama String
   email String @unique
 }
+
+
+model country {
+  id String @id @default(uuid())
+  code String 
+  name String 
+  continent String
+  population  String
+  capital String
+}
