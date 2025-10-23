@@ -3,17 +3,17 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateCountryDto } from './dto/create-country.dto';
-import { UpdateCountryDto } from './dto/update-country.dto';
+import { CreateCityDto } from './dto/create-city.dto';
+import { UpdateCityDto } from './dto/update-city.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { country } from '@prisma/client';
+import { City as city } from '@prisma/client';
 
 @Injectable()
-export class CountryService {
+export class CityService {
   constructor(private prisma: PrismaService) {}
-  async create(data: CreateCountryDto) {
+  async create(data: CreateCityDto) {
     try {
-      return await this.prisma.country.create({ data });
+      return await this.prisma.city.create({ data });
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw new InternalServerErrorException(error.message);
@@ -22,15 +22,15 @@ export class CountryService {
     }
   }
 
-  async findAll(): Promise<country[]> {
-    return await this.prisma.country.findMany();
+  async findAll(): Promise<city[]> {
+    return await this.prisma.city.findMany();
   }
 
-  async findOne(id: string): Promise<country> {
+  async findOne(id: string): Promise<city> {
     try {
-      const user = await this.prisma.country.findUnique({ where: { id } });
+      const user = await this.prisma.city.findUnique({ where: { id } });
       if (!user) {
-        throw new NotFoundException(`Country with ID ${id} not found`);
+        throw new NotFoundException(`city with ID ${id} not found`);
       }
       return user;
     } catch (error: unknown) {
@@ -41,22 +41,20 @@ export class CountryService {
     }
   }
 
-  async update(id: string, data: UpdateCountryDto): Promise<country> {
+  async update(id: string, data: UpdateCityDto): Promise<city> {
     try {
-      const findCountry = await this.prisma.country.findUnique({
+      const findCity = await this.prisma.city.findUnique({
         where: { id },
       });
-      if (!findCountry) {
-        throw new NotFoundException(`Country with ID ${id} not found`);
+      if (!findCity) {
+        throw new NotFoundException(`City with ID ${id} not found`);
       }
-      return await this.prisma.country.update({
+      return await this.prisma.city.update({
         where: { id },
         data: {
-          capital: data.capital ?? findCountry.capital,
-          code: data.code ?? findCountry.code,
-          continent: data.continent ?? findCountry.continent,
-          name: data.name ?? findCountry.name,
-          population: data.population ?? findCountry.population,
+          country_id: data.country_id ?? findCity.country_id,
+          district: data.district ?? findCity.district,
+          population: data.population ?? findCity.population,
         },
       });
     } catch (error: unknown) {
@@ -67,9 +65,9 @@ export class CountryService {
     }
   }
 
-  async remove(id: string): Promise<country> {
+  async remove(id: string): Promise<city> {
     try {
-        return await this.prisma.country.delete({ where: { id } });
+      return await this.prisma.city.delete({ where: { id } });
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw new InternalServerErrorException(error.message);
