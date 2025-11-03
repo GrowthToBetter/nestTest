@@ -6,7 +6,7 @@ import {
 import { CreateCityDto } from './dto/create-city.dto';
 import { UpdateCityDto } from './dto/update-city.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { City as city } from '@prisma/client';
+import { City as city, Prisma } from '@prisma/client';
 
 @Injectable()
 export class CityService {
@@ -22,8 +22,45 @@ export class CityService {
     }
   }
 
-  async findAll(): Promise<city[]> {
-    return await this.prisma.city.findMany();
+  async findAll(params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+  }): Promise<{
+    data: city[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
+    const { page = 1, limit = 10, search = '' } = params || {};
+
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.CityWhereInput = search
+      ? {
+          OR: [
+            { district: { contains: search, mode: 'insensitive' } },
+            { country: { name: { contains: search, mode: 'insensitive' } } },
+          ],
+        }
+      : {};
+
+    const [data, total] = await Promise.all([
+      this.prisma.city.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { district: 'asc' },
+      }),
+      this.prisma.city.count({ where }),
+    ]);
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+    };
   }
 
   async findOne(id: string): Promise<city> {

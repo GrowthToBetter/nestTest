@@ -15,9 +15,29 @@ datasource db {
 }
 
 model User {
-  id    String @id @default(uuid())
-  nama  String
-  email String @unique
+  id        String      @id @default(uuid())
+  nama      String
+  email     String      @unique
+  password  String
+  role      String      @default("siswa") // siswa | karyawan | admin
+  group     String?     // contoh: kelas atau jabatan
+  attendances Attendance[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model Attendance {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  date       DateTime // tanggal kehadiran (pakai only date)
+  status     String   // present | absent | late | izin
+  note       String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([userId, date])
+  @@unique([userId, date]) // satu record per user per tanggal
 }
 
 model country {
