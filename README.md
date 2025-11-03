@@ -54,3 +54,37 @@ Fitur utama meliputi:
 
 ## 📂 Struktur Proyek
 
+src/
+├── auth/
+│ ├── auth.controller.ts
+│ ├── auth.service.ts
+│ ├── jwt.strategy.ts
+│ └── jwt-auth.guard.ts
+├── users/
+│ ├── users.controller.ts
+│ ├── users.service.ts
+│ └── users.module.ts
+├── prisma/
+│ └── prisma.service.ts
+├── main.ts
+└── app.module.ts
+
+
+---
+
+## 🖼️ API Overview
+
+| Endpoint | Description | Example Image |
+|-----------|--------------|----------------|
+| `/auth/login` | User login with JWT | ![Login](public/login.png) |
+| `/user/create` | Create new user | ![Create User](public/createUser.png) |
+| `/user/update/:id` | Update existing user | ![Update User](public/updateUser.png) |
+| `/user/delete/:id` | Delete user | ![Delete User](public/deleteUser.png) |
+| `/user/all` | Get all users | ![Get All Users](public/getAllUser.png) |
+| `/user/:id` | Get user by ID | ![Get ID User](public/getIdUser.png) |
+| `/attendance` | Record attendance | ![Attendance](public/attendance.png) |
+| `/attendance/history/:userId` | View attendance history | ![History](public/history.png) |
+| `/attendance/summary/:userId` | Monthly attendance summary | ![Summary](public/summary.png) |
+| `/attendance/analysis` | Attendance analytics | ![Analysis](public/analys.png) |
+
+---
