@@ -7,9 +7,11 @@ import { CountryModule } from './country/country.module';
 import { CityModule } from './city/city.module';
 import { AuthModule } from './auth/auth.module';
 import { AttendanceModule } from './attendance/attendance.module';
+import { CompanyModule } from './company/company.module';
+import { SocietyModule } from './society/society.module';
 
 @Module({
-  imports: [UsersModule, PrismaModule, CountryModule, CityModule, AuthModule, AttendanceModule],
+  imports: [UsersModule, PrismaModule, CountryModule, CityModule, AuthModule, AttendanceModule, CompanyModule, SocietyModule],
   controllers: [AppController],
   providers: [AppService],
 })

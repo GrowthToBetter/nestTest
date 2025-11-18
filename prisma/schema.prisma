@@ -15,29 +15,30 @@ datasource db {
 }
 
 model User {
-  id        String      @id @default(uuid())
-  nama      String
-  email     String      @unique
-  password  String
-  role      String      @default("siswa") // siswa | karyawan | admin
-  group     String?     // contoh: kelas atau jabatan
+  id          String       @id @default(uuid())
+  nama        String
+  email       String       @unique
+  password    String
+  role        String       @default("siswa") // siswa | karyawan | admin
+  group       String? // contoh: kelas atau jabatan
   attendances Attendance[]
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  companies   company?
 }
 
 model Attendance {
-  id         String   @id @default(uuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id])
-  date       DateTime // tanggal kehadiran (pakai only date)
-  status     String   // present | absent | late | izin
-  note       String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  date      DateTime // tanggal kehadiran (pakai only date)
+  status    String // present | absent | late | izin
+  note      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@index([userId, date])
   @@unique([userId, date]) // satu record per user per tanggal
+  @@index([userId, date])
 }
 
 model country {
@@ -57,6 +58,30 @@ model Language {
   language   String
   isOfficial Boolean   @default(false)
   country    country[]
+}
+
+model company {
+  id      String             @id @default(uuid())
+  user_id String             @unique
+  user    User?              @relation(fields: [user_id], references: [id])
+  name    String
+  society SocietyToCompany[]
+}
+
+model SocietyToCompany {
+  id         String   @id @default(uuid())
+  company_id String   
+  company    company? @relation(references: [id], fields: [company_id])
+  society_id String   
+  society    Society? @relation(references: [id], fields: [society_id])
+
+  @@unique([company_id, society_id])
+}
+
+model Society {
+  id      String             @id @default(uuid())
+  name    String
+  company SocietyToCompany[]
 }
 
 model City {

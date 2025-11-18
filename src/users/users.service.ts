@@ -60,13 +60,17 @@ export class UsersService {
     try {
       const user = await this.prisma.user.findUnique({
         where: { id },
-        select: {
-          id: true,
-          nama: true,
-          email: true,
-          role: true,
-          group: true,
-          createdAt: true,
+        include: {
+          attendances: true,
+          companies: {
+            include: {
+              society: {
+                include:{
+                  society:true
+                }
+              },
+            },
+          },
         },
       });
       if (!user) throw new NotFoundException('User tidak ditemukan');
@@ -81,8 +85,7 @@ export class UsersService {
       const existing = await this.prisma.user.findUnique({ where: { id } });
       if (!existing) throw new NotFoundException('User tidak ditemukan');
 
-      if (data.password)
-        data.password = await bcrypt.hash(data.password, 10);
+      if (data.password) data.password = await bcrypt.hash(data.password, 10);
 
       const updated = await this.prisma.user.update({
         where: { id },
@@ -118,7 +121,9 @@ export class UsersService {
     try {
       const user = await this.prisma.user.findUnique({ where: { email } });
       if (!user)
-        throw new NotFoundException(`User dengan email ${email} tidak ditemukan`);
+        throw new NotFoundException(
+          `User dengan email ${email} tidak ditemukan`,
+        );
       return user;
     } catch (error) {
       this.handleError(error, 'Gagal mencari user berdasarkan email');
@@ -133,23 +138,33 @@ export class UsersService {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       switch (error.code) {
         case 'P2002':
-          throw new ConflictException(`${context}: Data duplikat (unique constraint gagal)`);
+          throw new ConflictException(
+            `${context}: Data duplikat (unique constraint gagal)`,
+          );
         case 'P2003':
-          throw new BadRequestException(`${context}: Foreign key constraint gagal`);
+          throw new BadRequestException(
+            `${context}: Foreign key constraint gagal`,
+          );
         case 'P2025':
           throw new NotFoundException(`${context}: Data tidak ditemukan`);
         default:
-          throw new InternalServerErrorException(`${context}: ${error.message}`);
+          throw new InternalServerErrorException(
+            `${context}: ${error.message}`,
+          );
       }
     }
 
-    if (error instanceof NotFoundException || 
-        error instanceof BadRequestException || 
-        error instanceof ConflictException) {
+    if (
+      error instanceof NotFoundException ||
+      error instanceof BadRequestException ||
+      error instanceof ConflictException
+    ) {
       throw error;
     }
 
     console.error(`[${context}]`, error);
-    throw new InternalServerErrorException(`${context}: ${error.message || 'Terjadi kesalahan internal'}`);
+    throw new InternalServerErrorException(
+      `${context}: ${error.message || 'Terjadi kesalahan internal'}`,
+    );
   }
 }
